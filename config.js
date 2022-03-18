@@ -8,17 +8,17 @@ module.exports = {
 	accounts: [
 		{
 			email: "joerogan1220@gmail.com",
-			password: "AbtMC1220"
-		},
-		{
-			"email": "alphabravo1220@gmail.com",
-			"password": "AbtMC1220"
+			password: "AbtMC1220",
 		},
 		{
 			"email": "williambaldwin1220@gmail.com",
-			"password": "AbtMC1220"
-		}
+			"password": "AbtMC1220",
+		},
+		{
+			"email": "alphabravo121220@gmail.com",
+			"password": "AbtMC1220",
+		},
 	],
-	nbrowsers: 2,
+	nbrowsers: 3,
 	keywords: ["pollockmed", "colemanusp", "mccrearyusp"]
 };

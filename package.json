@@ -8,9 +8,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "test": "jest || exit 0",
-    "start": "node server.js",
-    "watch": "nodemon server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
