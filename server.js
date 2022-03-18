@@ -244,7 +244,7 @@ const run = async() =>  {
     log(chalk.redBright.bold('Run count = ' + count));
 
     const rule = new schedule.RecurrenceRule();
-    rule.minute = 30;
+    rule.minute = 08;
     // rule.minute = new schedule.Range(0, 59, 5);
 
    const job = schedule.scheduleJob(rule, function(){
