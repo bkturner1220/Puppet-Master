@@ -1,0 +1,19 @@
+{
+    "accounts":
+    [
+        {
+	"1":{
+		"email": "alphabravo121220@gmail.com",
+		"password": "AbtMC1220"
+	},
+	"2":{
+		"email": "joerogan1220@gmail.com",
+		"password": "AbtMC1220"
+	},
+	"3":{
+		"email": "williambaldwin1220@gmail.com",
+		"password": "AbtMC1220"
+	}
+}
+]
+}

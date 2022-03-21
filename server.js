@@ -23,7 +23,6 @@ const { corrUsername, corrPassword, accounts, keywords, nbrowsers } = require('.
 
 const login_data = JSON.parse(fs.readFileSync("./login.json"));
 let running_browsers = 0;
-let count = 0;
 
 const start = async (email, password) => {
 
@@ -31,10 +30,12 @@ const start = async (email, password) => {
 
     const info = [];
     puppeteer.use(StealthPlugin());
+    process.setMaxListeners(Infinity);
 	const browser = await puppeteer.launch({
-		args: [], 
+		args: ['--no-sandbox'], 
 		headless: true,
-		slowMo: 20,
+		slowMo: 10,
+        ignoreHTTPSErrors: true,
 		devtools: false 
 	})
 
@@ -48,13 +49,14 @@ const start = async (email, password) => {
         try {
             await log_in(page, email, password);
             // page.waitForNavigation({waitUntil: 'networkidle2'}),
+            // await page.reload();
 
             // await page.waitForSelector('#ctl00_mainContentPlaceHolder_mailboxImageButton');
             log(chalk.greenBright.bold('Login Successful!'));
         } catch (error) {
             log(chalk.redBright.bold('Login Unsuccessful'));
             log(chalk.redBright.bold(error));
-            await browser.close();
+            // await browser.close();
 
         }
         
@@ -74,19 +76,46 @@ const start = async (email, password) => {
                     log(chalk.yellowBright.bold("Fetching keyword associations..."));
                     await newMessage(page, data.msgSubject, data.msgBody);
                     // await page.waitForSelector('#ctl00_logoutLink');
-                    await page.goto(logoutUrl);
-                    // await browser.close();
-                    run();
+                    // await page.goto(logoutUrl);
+                    // running_browsers--;
+                                        // await browser.close();
+
+                    // run();
 
                 }
             } else {
                 let messageExist = ''
                 log(chalk.redBright.bold('No new messages...'));
-                await page.reload();
-                // await page.waitForTimeout(5000);
-                page.goto(logoutUrl);
-                run();
+                // await page.reload();
+                await page.waitForTimeout(2000);
+                // page.goto(logoutUrl);
                 
+                // await page.waitForSelector('#ctl00_mainContentPlaceHolder_mailboxImageButton');
+                // await page.click('#ctl00_mainContentPlaceHolder_mailboxImageButton');
+                // await page.waitForSelector('#ctl00_mainContentPlaceHolder_Image1');
+                // await page.click('#ctl00_mainContentPlaceHolder_Image1');
+                // await page.waitForSelector('#ctl00_mainContentPlaceHolder_addressBox_addressTextBox');
+                // await page.click('#ctl00_mainContentPlaceHolder_addressBox_addressTextBox');
+                // await page.waitForSelector('#ctl00_mainContentPlaceHolder_addressBox_addressGrid_ctl02_sendCheckBox');
+                // await page.click('#ctl00_mainContentPlaceHolder_addressBox_addressGrid_ctl02_sendCheckBox');
+                // await page.click('#ctl00_mainContentPlaceHolder_addressBox_okButton');
+                // await page.waitForTimeout(5000);
+                // log(chalk.greenBright.bold('recipient selected!'));
+                // await page.waitForSelector('#ctl00_mainContentPlaceHolder_subjectTextBox');
+                // await page.click('#ctl00_mainContentPlaceHolder_subjectTextBox');
+                // await page.keyboard.type('Automated Message!');
+                // await page.click('#ctl00_mainContentPlaceHolder_messageTextBox');
+                // await page.keyboard.type('Messages: 0 Time: ' + now + '. Currently no messages for your account at this time. Keep your heads up and rest easy my friends! L/Rs');
+                // await page.click('#ctl00_mainContentPlaceHolder_sendMessageButton');
+                // log(chalk.greenBright.bold('Automated message sent successfully!'));
+                // await browser.close()
+
+                // running_browsers--;
+                // await browser.close();
+                // run();
+
+                // await page.goto(logoutUrl);
+
 
                 // ******** TESTING PURPOSES ONLY! *********
                 // await page.goto('https://www.corrlinks.com/Inbox.aspx');
@@ -96,17 +125,15 @@ const start = async (email, password) => {
                 // for (let i = 0; i < info.length; i++) {
                 //     const data = info[i];
                 //     await log_in(page, login_data[data.keyword].email, login_data[data.keyword].password);
-                //     // console.log("**** TESTING ****");
+                //     console.log("**** TESTING ****");
                 //     await newMessage(page, data.msgSubject, data.msgBody)
-                    // await page.waitForSelector('#ctl00_logoutLink');
-                    // await page.goto(logoutUrl);
-                    // await browser.close();
-
-                // }
+                //     await page.waitForSelector('#ctl00_logoutLink');
+                //     await page.goto(logoutUrl);
+                //     await browser.close(); }
             }
     
         } catch (error) {
-            await page.reload();
+            // await page.reload();
             log(chalk.redBright.bold(error));
             await page.waitForSelector('#ctl00_mainContentPlaceHolder_mailboxImageButton');
             await page.click('#ctl00_mainContentPlaceHolder_mailboxImageButton');
@@ -125,12 +152,11 @@ const start = async (email, password) => {
             await page.click('#ctl00_mainContentPlaceHolder_messageTextBox');
             await page.keyboard.type('Please make sure to enter the institutional name in the subject! (e.g. colemanusp) Please also remeber on a reply email to start a new email until I get the reply function worked.  L/Rs', { delay: 50 });
             await page.click('#ctl00_mainContentPlaceHolder_sendMessageButton');
-            await page.goto(logoutUrl);
-            
 
         }
-        // await page.close()
-        running_browsers--;
+        // running_browsers--;
+        // await browser.close();
+
     };
 
     async function log_in(page, corrUsername, corrPassword) {
@@ -195,7 +221,7 @@ function getText(linkText) {
 
 const newMessage = async (page, msgSubject, msgBody) => {
 	try {
-        await page.reload();
+        // await page.reload();
 		log(chalk.yellowBright.bold('Loading new message input...'));
         await page.waitForSelector('#ctl00_mainContentPlaceHolder_mailboxImageButton');
         await page.click('#ctl00_mainContentPlaceHolder_mailboxImageButton');
@@ -210,44 +236,42 @@ const newMessage = async (page, msgSubject, msgBody) => {
 		log(chalk.greenBright.bold('recipient selected!'));
         await page.waitForSelector('#ctl00_mainContentPlaceHolder_subjectTextBox');
 		await page.click('#ctl00_mainContentPlaceHolder_subjectTextBox');
-		await page.keyboard.type(msgSubject, { delay: 50 });
+		await page.keyboard.type(msgSubject);
 		await page.click('#ctl00_mainContentPlaceHolder_messageTextBox');
-		await page.keyboard.type(msgBody, { delay: 50 });
+		await page.keyboard.type(msgBody);
 		await page.click('#ctl00_mainContentPlaceHolder_sendMessageButton');
 		// await page.waitForSelector('#ctl00_mainContentPlaceHolder_messageLabel');
 		log(chalk.greenBright.bold('Message sent successful!'));
 		log(chalk.yellowBright.bold("Subject: " + msgSubject+"-"+now));
 		log(chalk.yellowBright.bold("Body: " + msgBody));
-        await page.click('#ctl00_logoutLink')
-        // await page.close();
-        run();
+        // await page.goto(logoutUrl)
+        // await browser.close();
+
 
 	} catch (error) {
 		log(chalk.redBright.bold('Message sent failed, please try again...'));
 		log(chalk.redBright.bold(error));
-        await page.click('#ctl00_logoutLink')
-        // await page.close()
-        run();
+        // await page.goto(logoutUrl)
+        // await browser.close();
 
         
 	}
 }
 
 
-const run = async() =>  {
+async function run() {
 
     // log(figchalk.mix("CorrBrothers", "red", "Graffiti"));
 	// log(chalk.yellowBright.bold("                                                                             By: Brian" + " 'KT' "+ "Turner"));
 	// log(chalk.bgRed.bold('                                                                                                    '))
     log(chalk.yellowBright.bold("Services in Idle mode..."));
     log(chalk.redBright.bold(now));
-    log(chalk.redBright.bold('Run count = ' + count));
 
-    const rule = new schedule.RecurrenceRule();
-    rule.minute = 08;
-    // rule.minute = new schedule.Range(0, 59, 5);
+//     const rule = new schedule.RecurrenceRule();
+//     rule.minute = 20;
+  
 
-   const job = schedule.scheduleJob(rule, function(){
+//    const job = schedule.scheduleJob(rule, function(){
   
 
     log(chalk.yellowBright.bold("Services in Run mode..."));
@@ -264,10 +288,8 @@ const run = async() =>  {
 		{
 			 start(accounts[i].email, accounts[i].password)
 			i++;
-            count++;
         }
 		}
-	})
-};
-
-run();
+    // })
+	}
+    run();
