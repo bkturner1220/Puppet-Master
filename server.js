@@ -32,7 +32,10 @@ const start = async (email, password) => {
     puppeteer.use(StealthPlugin());
     process.setMaxListeners(Infinity);
 	const browser = await puppeteer.launch({
-		args: ['--no-sandbox'], 
+		args: [
+        '--no-sandbox',
+        '--single-process',
+        '--no-zygote'], 
 		headless: true,
 		slowMo: 10,
         ignoreHTTPSErrors: true,
@@ -153,9 +156,12 @@ const start = async (email, password) => {
             await page.keyboard.type('Please make sure to enter the institutional name in the subject! (e.g. colemanusp) Please also remeber on a reply email to start a new email until I get the reply function worked.  L/Rs', { delay: 50 });
             await page.click('#ctl00_mainContentPlaceHolder_sendMessageButton');
 
+        } finally {
+        running_browsers--;
+        await browser.disconnect();
+        await browser.close();
         }
-        // running_browsers--;
-        // await browser.close();
+
 
     };
 

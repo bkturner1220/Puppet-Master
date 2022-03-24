@@ -7,6 +7,10 @@
     "npm": ">=7.0.0",
     "node": ">=16.0.0"
   },
+  "reactSnap": {
+    "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox"],
+    "puppeteerExecutablePath": "/opt/google/chrome/google-chrome"
+  },
   "scripts": {
     "start": "node server.js"
   },
