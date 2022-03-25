@@ -34,16 +34,16 @@ const start = async (email, password) => {
 	const browser = await puppeteer.launch({
 		args: [
         '--no-sandbox',
-        '--single-process',
-        '--no-zygote'], 
-		headless: true,
+        '--no-zygote'
+              ], 
+		headless: false,
 		slowMo: 10,
         ignoreHTTPSErrors: true,
 		devtools: false 
 	})
 
-	const page = await browser.newPage();
-    await page.waitForTimeout(500)
+	const [page] = await browser.pages();
+    // await page.waitForTimeout(500)
 
 	await page.goto(mainUrl);
 	page.waitForNavigation({waitUntil: 'networkidle2'}),
@@ -60,6 +60,7 @@ const start = async (email, password) => {
             log(chalk.redBright.bold('Login Unsuccessful'));
             log(chalk.redBright.bold(error));
             // await browser.close();
+            await Promise.all([ await browser.disconnect(), await browser.close(), await run() ])
 
         }
         
@@ -76,6 +77,8 @@ const start = async (email, password) => {
                 for (let i = 0; i < info.length; i++) {
                     const data = info[i];
                     log_in(page, login_data[data.keyword].email, login_data[data.keyword].password);
+                                    // await page.waitForTimeout(2000);
+
                     log(chalk.yellowBright.bold("Fetching keyword associations..."));
                     await newMessage(page, data.msgSubject, data.msgBody);
                     // await page.waitForSelector('#ctl00_logoutLink');
@@ -84,15 +87,23 @@ const start = async (email, password) => {
                                         // await browser.close();
 
                     // run();
+                    await Promise.all([ await browser.disconnect(), await browser.close(), await run() ])
 
                 }
             } else {
                 let messageExist = ''
                 log(chalk.redBright.bold('No new messages...'));
+                await browser.disconnect() 
+                await browser.close() 
+                // await run()
                 // await page.reload();
-                await page.waitForTimeout(2000);
+                // await page.waitForTimeout(2000);
                 // page.goto(logoutUrl);
-                
+                // await browser.disconnect();
+                // await browser.close();
+                // await running_browsers--;
+
+                // run();
                 // await page.waitForSelector('#ctl00_mainContentPlaceHolder_mailboxImageButton');
                 // await page.click('#ctl00_mainContentPlaceHolder_mailboxImageButton');
                 // await page.waitForSelector('#ctl00_mainContentPlaceHolder_Image1');
@@ -155,11 +166,10 @@ const start = async (email, password) => {
             await page.click('#ctl00_mainContentPlaceHolder_messageTextBox');
             await page.keyboard.type('Please make sure to enter the institutional name in the subject! (e.g. colemanusp) Please also remeber on a reply email to start a new email until I get the reply function worked.  L/Rs', { delay: 50 });
             await page.click('#ctl00_mainContentPlaceHolder_sendMessageButton');
+            await Promise.all([ await browser.disconnect(), await browser.close(), await run() ])
 
         } finally {
-        running_browsers--;
-        await browser.disconnect();
-        await browser.close();
+
         }
 
 
@@ -250,8 +260,11 @@ const newMessage = async (page, msgSubject, msgBody) => {
 		log(chalk.greenBright.bold('Message sent successful!'));
 		log(chalk.yellowBright.bold("Subject: " + msgSubject+"-"+now));
 		log(chalk.yellowBright.bold("Body: " + msgBody));
+
         // await page.goto(logoutUrl)
         // await browser.close();
+         await browser.disconnect() 
+         await browser.close()
 
 
 	} catch (error) {
@@ -259,6 +272,7 @@ const newMessage = async (page, msgSubject, msgBody) => {
 		log(chalk.redBright.bold(error));
         // await page.goto(logoutUrl)
         // await browser.close();
+        await Promise.all([ await browser.disconnect(), await browser.close(), await run() ])
 
         
 	}
@@ -267,14 +281,11 @@ const newMessage = async (page, msgSubject, msgBody) => {
 
 async function run() {
 
-    // log(figchalk.mix("CorrBrothers", "red", "Graffiti"));
-	// log(chalk.yellowBright.bold("                                                                             By: Brian" + " 'KT' "+ "Turner"));
-	// log(chalk.bgRed.bold('                                                                                                    '))
+try {
     log(chalk.yellowBright.bold("Services in Idle mode..."));
     log(chalk.redBright.bold(now));
-
-//     const rule = new schedule.RecurrenceRule();
-//     rule.minute = 20;
+    //     const rule = new schedule.RecurrenceRule();
+//     rule.minute = 45;
   
 
 //    const job = schedule.scheduleJob(rule, function(){
@@ -297,5 +308,11 @@ async function run() {
         }
 		}
     // })
+} catch (error) {
+    
+    await Promise.all([ await browser.disconnect(), await browser.close(), await run() ])
+
+  
+}
 	}
     run();
